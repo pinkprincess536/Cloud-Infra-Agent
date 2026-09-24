@@ -1,0 +1,4 @@
+service,component,owner,environment,criticality,dependencies,endpoint,port,data_class
+document-processor,api,billing-platform,sandbox,high,"s3-documents,sqs-document-jobs,rds-postgres",https://docproc.sandbox.cedarpeak.example,8000,internal
+document-processor,worker,billing-platform,sandbox,high,"s3-documents,sqs-document-jobs,rds-postgres",none,8000,internal
+document-processor,api,billing-platform,production,high,"s3-documents,sqs-document-jobs,rds-postgres",https://docproc.cedarpeak.example,8000,internal

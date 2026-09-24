@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: CedarPeak Document Processor API
+  version: 1.4.0
+  description: Synthetic contract for the document-processing workload.
+servers:
+  - url: https://docproc.cedarpeak.example
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+  /v1/documents:
+    post:
+      summary: Submit a document for asynchronous processing
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenant_id, object_key, data_class]
+              properties:
+                tenant_id:
+                  type: string
+                object_key:
+                  type: string
+                data_class:
+                  type: string
+                  enum: [public, internal, restricted-eu]
+      responses:
+        '202':
+          description: Processing accepted
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-runtime:
+  language: python
+  version: "3.12"
+x-server:
+  container_port: 8000
+x-queue:
+  queue_name: document-processing-jobs
+  async: true

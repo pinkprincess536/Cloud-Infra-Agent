@@ -1,0 +1,3 @@
+incident_id,date,service,symptom,root_cause,lesson
+OPS-2026-08-21,2026-08-21,document-processor,"SQS backlog for 18 minutes","worker concurrency was too low during a partner burst","size worker concurrency from queue depth and processing time"
+OPS-2026-07-03,2026-07-03,document-processor,"staging integration timeout","legacy partner required temporary direct DB access","use ADR-004 staging exception only when all conditions are met"

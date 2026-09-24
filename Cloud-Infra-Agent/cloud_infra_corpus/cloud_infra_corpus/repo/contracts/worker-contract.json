@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "document-processing-jobs message",
+  "type": "object",
+  "required": ["job_id", "tenant_id", "object_key", "data_region", "data_class", "requested_at"],
+  "properties": {
+    "job_id": {"type": "string"},
+    "tenant_id": {"type": "string"},
+    "object_key": {"type": "string"},
+    "data_region": {"type": "string", "enum": ["ap-south-1", "eu-central-1"]},
+    "data_class": {"type": "string", "enum": ["public", "internal", "restricted-eu"]},
+    "requested_at": {"type": "string", "format": "date-time"}
+  },
+  "notes": [
+    "document content is stored in S3; it is not embedded in the queue message",
+    "for restricted-eu jobs, data_region must be eu-central-1"
+  ]
+}

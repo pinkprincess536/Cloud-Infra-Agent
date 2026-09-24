@@ -1,0 +1,123 @@
+company:
+  name: CedarPeak Systems
+  fictional: true
+  domain: document-processing infrastructure
+
+workload:
+  service: document-processor
+  owner: billing-platform
+  pattern: api + asynchronous worker + PostgreSQL + S3 + SQS
+  environments: [sandbox, staging, production]
+  default_region: ap-south-1
+  tags_required:
+    service: document-processor
+    owner: billing-platform
+    cost-center: FIN-42
+    environment: "<environment>"
+    data-class: "<public|internal|restricted-eu>"
+
+regions:
+  general:
+    - ap-south-1
+  restricted_eu:
+    - eu-central-1
+  rule: "Restricted-EU document content must be stored and processed in eu-central-1; control-plane metadata with no document content may remain in ap-south-1."
+
+data_classes:
+  public:
+    description: public information
+  internal:
+    description: ordinary company documents without restricted EU residency requirement
+  restricted-eu:
+    description: EU customer document content subject to EU residency
+
+security:
+  current_policy:
+    id: SEC-04
+    effective: 2026-08-01
+    status: current
+  superseded_policy:
+    id: SEC-03
+    effective: 2026-03-01
+    status: superseded_by_SEC-04
+  rds:
+    public_access: false
+    encryption_at_rest: required
+    tls_in_transit: required
+  restricted_eu:
+    allowed_region: eu-central-1
+    cross_region_document_content_copy: prohibited
+    encryption_at_rest: customer_managed_kms
+
+architecture:
+  api:
+    runtime: python
+    version: "3.12"
+    port: 8000
+    health_path: /health
+    ingress: ALB only
+  worker:
+    runtime: python
+    public_ingress: false
+    queue: document-processing-jobs
+  database:
+    engine: postgres
+    major_version: "16"
+    public_access: false
+  storage:
+    service: S3
+    encryption: KMS
+  queue:
+    service: SQS Standard
+    visibility_timeout_seconds: 300
+    max_receive_count: 3
+
+approved_modules:
+  effective: 2026-09-10
+  versions:
+    vpc: 5.1.0
+    ecs_service: 3.4.1
+    rds_postgres: 6.1.2
+    s3_bucket: 1.9.0
+    sqs: 2.5.0
+  old_versions_present_in_history:
+    ecs_service: 3.2.0
+    vpc: 2.9.0
+    rds_postgres: 5.7.0
+    s3_bucket: 1.7.0
+    sqs: 2.3.0
+
+exception:
+  id: ADR-004
+  scope: staging
+  capability: temporary_public_rds_for_legacy_partner_integration
+  expiry: 2026-10-15
+  conditions:
+    - no customer document content
+    - partner source CIDRs allowlisted
+    - TLS required
+    - encryption at rest required
+    - not valid in production
+
+cost:
+  sandbox_guidance_inr_per_month: 12000
+  missing_inputs_for_precise_estimate:
+    - peak_documents_per_minute
+    - average_file_size_mb
+    - maximum_file_size_mb
+    - retention_period
+    - monthly_budget_ceiling
+
+known_drift:
+  terraform_region: eu-central-1
+  observed_inventory_rds_region: eu-west-1
+  resolution_rule: "Observed state is evidence; desired intent must be confirmed by service owner and Platform Engineering before destructive reconciliation."
+
+source_priority:
+  - current_security_policy
+  - current_dated_platform_update
+  - environment_scoped_exception_when_conditions_match
+  - current_architecture_decision
+  - service_catalog_and_contracts
+  - observed_inventory_for_actual_state
+  - superseded_documents_for_history_only

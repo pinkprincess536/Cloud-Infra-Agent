@@ -1,0 +1,20 @@
+{
+  "snapshot_id": "INV-2026-09-22-1840",
+  "source": "read-only sandbox inventory",
+  "captured_at": "2026-09-22T18:40:00+05:30",
+  "environment": "sandbox",
+  "document_processor": {
+    "api_region": "ap-south-1",
+    "worker_region": "ap-south-1",
+    "rds_region": "eu-west-1",
+    "s3_region": "ap-south-1",
+    "sqs_region": "ap-south-1"
+  },
+  "rds": {
+    "identifier": "docproc-sandbox-db",
+    "public_access": false,
+    "engine": "postgres",
+    "engine_major": "16"
+  },
+  "note": "The RDS region differs from terraform/variables.tf and is a deliberate configuration-drift fixture. Inventory is observed state, not approval or desired intent."
+}
