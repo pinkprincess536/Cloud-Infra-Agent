@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools==81.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloud-infrastructure-agent"
+version = "0.1.0"
+description = "A company-aware assistant for reviewable, policy-checked sandbox infrastructure changes."
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.1.1",
+]
+
+[project.scripts]
+cloud-agent = "agent.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agent*", "cloud_infra_corpus*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+"cloud_infra_corpus.cloud_infra_corpus" = ["**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
